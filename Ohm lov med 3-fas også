@@ -71,3 +71,4 @@ def calculate_missing_value(V=None, I=None, R=None, P=None, phase=None, output_f
 calculate_missing_value(V=230, I=10, phase=1, output_file="beregninger.txt")  # Lag et tekstdokument for enkeltfase
 calculate_missing_value(V=400, I=20, phase=3, output_file="beregninger.txt")   # Lag et tekstdokument for trefase
 
+
