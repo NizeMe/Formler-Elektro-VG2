@@ -1,1 +1,122 @@
+import math
+
+def velg_installasjon():
+    print("Velg typen installasjon:")
+    print("1. Industri/kontor")
+    print("2. Bolig")
+    valg = input("Skriv inn valget ditt: ")
+
+    if valg == "1":
+        return "industri"
+    elif valg == "2":
+        return "bolig"
+    else:
+        print("Ugyldig valg. Prøv igjen.")
+        return velg_installasjon()
+
+def velg_fasetype():
+    print("Velg typen anlegg:")
+    print("1. Enfas")
+    print("2. Trefas")
+    valg = input("Skriv inn valget ditt: ")
+
+    if valg == "1":
+        return "enfas"
+    elif valg == "2":
+        return "trefas"
+    else:
+        print("Ugyldig valg. Prøv igjen.")
+        return velg_fasetype()
+
+def input_ib():
+    ib = float(input("Skriv inn belastningstrømmen (Ib) i ampere (A): "))
+    return ib
+
+def input_rho():
+    print("Velg materialet på kabelen:")
+    print("1. Kobber (7/400)")
+    print("2. Aluminium (3/100)")
+    valg = input("Skriv inn valget ditt: ")
+
+    if valg == "1":
+        return 7 / 400
+    elif valg == "2":
+        return 3 / 100
+    else:
+        print("Ugyldig valg. Prøv igjen.")
+        return input_rho()
+
+def input_l():
+    l = float(input("Skriv inn lengden på kabelen (l) i meter (m): "))
+    return l
+
+def input_A():
+    A = float(input("Skriv inn tversnittet på kabelen (A) i kvadratmillimeter (mm^2): "))
+    return A
+
+def input_U():
+    U = float(input("Skriv inn spenningen (U) i volt (V) (230V for IT-nett, 400V for TN-nett): "))
+    return U
+
+def beregn_delta_U(ib, rho, l, A, fasetype):
+    if fasetype == "enfas":
+        return (ib * rho * l * 2) / A
+    elif fasetype == "trefas":
+        return (ib * rho * l * 2 * math.sqrt(3)) / A
+
+def beregn_delta_u(U, totalspenning):
+    return (U * 100) / totalspenning
+
+def lag_tekstdokument(installasjon, dokument_navn, data, kommentar=""):
+    filename = f"{dokument_navn}.txt"
+    with open(filename, "w") as f:
+        f.write("Elektrisk informasjon:\n\n")
+        for krav, info in data.items():
+            f.write(f"Krav {krav}:\n")
+            for key, value in info.items():
+                f.write(f"{key}: {value}\n")
+            f.write("\n")
+        if kommentar:
+            f.write(f"Kommentar: {kommentar}\n")
+        f.write("OK!\n")
+    return filename
+
+def hovedprogram():
+    dokument_navn = input("Skriv inn navnet på dokumentet: ")
+
+    installasjon = velg_installasjon()
+    print("Du valgte", installasjon)
+
+    fasetype = velg_fasetype()
+    print("Du valgte", fasetype)
+
+    data = {}
+
+    while True:
+        ib = input_ib()
+        rho = input_rho()
+        l = input_l()
+        A = input_A()
+
+        delta_U = beregn_delta_U(ib, rho, l, A, fasetype)
+
+        if fasetype == "enfas":
+            totalspenning = 230  # IT-nett
+        elif fasetype == "trefas":
+            totalspenning = 400  # TN-nett
+        delta_u = beregn_delta_u(totalspenning, totalspenning)
+
+        kommentar = "2% for motor, 3% for lys, 5% for annet"
+
+        data[len(data) + 1] = {"I_b": ib, "ΔU": delta_U}
+
+        fortsett = input("Ønsker du å fortsette? (Ja/Nei): ")
+        if fortsett.lower() != 'ja':
+            break
+
+    dokument_navn = lag_tekstdokument(installasjon, dokument_navn, data, kommentar)
+    print(f"Elektrisk informasjon lagret i {dokument_navn}")
+
+if __name__ == "__main__":
+    hovedprogram()
 
