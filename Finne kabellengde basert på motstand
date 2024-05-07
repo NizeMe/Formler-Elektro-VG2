@@ -1,1 +1,85 @@
+import os
+
+# Funksjon for å beregne lengden på kabelen
+def calculate_length(r_material, R, A):
+    R_pin = 0.1  # Motstanden til målepinnen
+    R_material = R - R_pin  # Motstanden til materialet
+    l = R_material * A / r_material  # Lengden på kabelen
+
+    return l, R_pin, R_material
+
+# Funksjon for å lagre beregningene til en tekstfil
+def save_calculation(material, R, A, l, R_pin, R_material):
+    filename = f"beregning_av_kabellengde_{material}.txt"
+    with open(filename, "w") as file:
+        file.write(f"Beregning av kabellengde for {material} kabel:\n")
+        file.write(f"Lengde på kabelen (l) = Motstand for materialet (R - Motstand for målepinnen) * Tverrsnittsarealet på kabelen (A) / Motstanden til materialet (r)\n")
+        file.write(f"l = ({R} - {R_pin}) * {A} / {r_material}\n")
+        file.write(f"l = {R_material:.4f} * {A} / {r_material}\n")
+        file.write(f"l = {l:.4f} meter\n\n")
+        file.write("Forklaring på de anvendte verdiene:\n")
+        file.write(f"Total motstand (R) er satt til {R} ohm.\n")
+        file.write(f"Tverrsnittsarealet på kabelen (A) er satt til {A} kvadratmeter.\n")
+        file.write(f"Motstanden til materialet (r) er {r_material:.4f} ohm per meter.\n")
+        file.write(f"Motstanden til målepinnen er {R_pin} ohm.\n")
+
+    print(f"Beregningene er lagret i {filename}.")
+
+# Funksjon for å gi forslag til løsninger eller kilder for formler/tabeller
+def suggest_solutions():
+    print("Du kan prøve følgende løsninger for å finne formler eller tabeller:")
+    print("1. Søk etter relevante formler på nettet.")
+    print("2. Sjekk lærebøker eller notater om emnet.")
+    print("3. Besøk nettsteder som tilbyr teknisk dokumentasjon eller ressurser, for eksempel Wikipedia eller Khan Academy.")
+
+# Hovedprogrammet
+def Regne_EL_formler():
+    print("Velkommen til Regne EL formler! Dette programmet lar deg beregne kabellengden basert på motstand.")
+    print("Du kan velge mellom følgende formler:")
+    print("1. Beregne kabellengde basert på motstand (l = (R - R_pin) * A / r)")
+
+    while True:
+        formula_choice = input("Skriv inn nummeret på den formelen du vil bruke, eller skriv '?' for forslag til løsninger: ")
+
+        if formula_choice == '1':
+            print("Du har valgt formel 1: Beregne kabellengde basert på motstand (l = (R - R_pin) * A / r)")
+
+            # Spør brukeren om valg av materiale
+            while True:
+                material_choice = input("Velg materialet (1 for kobber, 2 for aluminium): ")
+
+                if material_choice == '1':
+                    r_material = 7 / 400  # Motstand for kobber (ohm/m)
+                    material = "kobber"
+                    break
+                elif material_choice == '2':
+                    r_material = 3 / 100  # Motstand for aluminium (ohm/m)
+                    material = "aluminium"
+                    break
+                else:
+                    print("Ugyldig valg av materiale.")
+
+            # Spør brukeren om total motstand
+            R = float(input("Skriv inn total motstand (R) (i ohm): "))
+
+            # Spør brukeren om tverrsnittet på kabelen
+            A = float(input("Skriv inn tverrsnittsarealet på kabelen (i kvadratmeter): "))
+
+            # Beregn kabellengden
+            l, R_pin, R_material = calculate_length(r_material, R, A)
+
+            # Lagre beregningen til en tekstfil
+            save_calculation(material, R, A, l, R_pin, R_material)
+
+            break  # Avslutt løkken når beregningene er utført
+
+        elif formula_choice == '?':
+            suggest_solutions()
+
+        else:
+            print("Ugyldig valg av formel.")
+
+# Kjør hovedprogrammet
+if __name__ == "__main__":
+    Regne_EL_formler()
 
