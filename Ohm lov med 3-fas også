@@ -1,1 +1,73 @@
+import math
+
+def calculate_missing_value(V=None, I=None, R=None, P=None, phase=None, output_file="output.txt"):
+    # Sjekk om det er nøyaktig tre variabler gitt
+    if sum(x is not None for x in [V, I, R, P]) != 3:
+        print("Du må oppgi nøyaktig tre variabler.")
+        return
+
+    # Sjekk om fase er gitt som tall, og oversett stringer som 'single' og 'three'
+    if isinstance(phase, str):
+        try:
+            phase = int(phase)
+        except ValueError:
+            print("Fase må være enten 1 for enkeltfase eller 3 for trefase.")
+            return
+
+    # Sjekk om fase er enten 1 eller 3
+    if phase not in [1, 3]:
+        print("Fase må være enten 1 for enkeltfase eller 3 for trefase.")
+        return
+
+    # Åpne et tekstfil for å skrive ut beregningene
+    with open(output_file, "w") as file:
+        # Skriv ut inputverdiene
+        file.write("Inputverdier:\n")
+        file.write("--------------\n")
+        file.write("Spenning (V) = {}\n".format(V))
+        file.write("Strøm (I) = {}\n".format(I))
+        file.write("Motstand (R) = {}\n".format(R))
+        file.write("Effekt (P) = {}\n".format(P))
+        file.write("Fase = {}\n\n".format(phase))
+
+        # Skriv ut hva verdiene betyr
+        file.write("Forklaring:\n")
+        file.write("--------------\n")
+        file.write("Spenning (V): Elektrisk potensialforskjell mellom to punkter.\n")
+        file.write("Strøm (I): Mengden elektriske ladninger som passerer et gitt punkt per tidsenhet.\n")
+        file.write("Motstand (R): Evnen til et materiale eller en komponent til å hindre strøm av elektrisk ladning.\n")
+        file.write("Effekt (P): Målet for energi overført per tidsenhet.\n")
+        file.write("Fase: Antall faser i det elektriske systemet (1 for enkeltfase, 3 for trefase).\n\n")
+
+        # Beregn den manglende variabelen og skriv ut beregningene
+        file.write("Beregninger:\n")
+        file.write("--------------\n")
+        if V is None:
+            if phase == 1:
+                V = I * R
+            elif phase == 3:
+                V = math.sqrt(3) * I * R
+            file.write("Spenning (V) = I * R = {} * {} = {} volt\n".format(I, R, V))
+        elif I is None:
+            if phase == 1:
+                I = P / V
+            elif phase == 3:
+                I = P / (math.sqrt(3) * V)
+            file.write("Strøm (I) = P / V = {} / {} = {} ampere\n".format(P, V, I))
+        elif R is None:
+            if phase == 1:
+                R = V / I
+            elif phase == 3:
+                R = V / (math.sqrt(3) * I)
+            file.write("Motstand (R) = V / I = {} / {} = {} ohm\n".format(V, I, R))
+        elif P is None:
+            if phase == 1:
+                P = V * I
+            elif phase == 3:
+                P = math.sqrt(3) * V * I
+            file.write("Effekt (P) = V * I = {} * {} = {} watt\n".format(V, I, P))
+
+# Eksempel på bruk:
+calculate_missing_value(V=230, I=10, phase=1, output_file="beregninger.txt")  # Lag et tekstdokument for enkeltfase
+calculate_missing_value(V=400, I=20, phase=3, output_file="beregninger.txt")   # Lag et tekstdokument for trefase
 
