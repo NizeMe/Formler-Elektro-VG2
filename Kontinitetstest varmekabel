@@ -1,1 +1,84 @@
-q
+import os
+
+# Funksjon for å beregne motstanden
+def calculate_resistance(r_material, l, A):
+    R_pin = 0.1  # Motstanden til målepinnen
+    R_material = r_material * l / A  # Motstanden til materialet
+    total_resistance = R_pin + R_material  # Total motstand
+
+    return total_resistance, R_pin, R_material
+
+# Funksjon for å lagre beregningene til en tekstfil
+def save_calculation(material, l, A, total_resistance, R_pin, R_material):
+    filename = f"utregning_til_{material}_kabel.txt"
+    with open(filename, "w") as file:
+        file.write(f"Beregning av total motstand for {material} kabel:\n")
+        file.write(f"Total motstand (R) = Motstand for materialet (r * l / A) + Motstand for målepinnen (0.1)\n")
+        file.write(f"R = ({material} * {l} / {A}) + 0.1\n")
+        file.write(f"R = {R_material:.4f} + {R_pin}\n")
+        file.write(f"R = {total_resistance:.4f}\n\n")
+        file.write("Forklaring på de anvendte verdiene:\n")
+        file.write(f"Lengden på kabelen (l) er satt til {l} meter.\n")
+        file.write(f"Tverrsnittsarealet på kabelen (A) er satt til {A} kvadratmeter.\n")
+        file.write(f"Motstanden til materialet (r) er {r_material:.4f} ohm per meter.\n")
+        file.write(f"Motstanden til målepinnen er {R_pin} ohm.\n")
+
+    print(f"Beregningene er lagret i {filename}.")
+
+# Funksjon for å gi forslag til løsninger eller kilder for formler/tabeller
+def suggest_solutions():
+    print("Du kan prøve følgende løsninger for å finne formler eller tabeller:")
+    print("1. Søk etter relevante formler på nettet.")
+    print("2. Sjekk lærebøker eller notater om emnet.")
+    print("3. Besøk nettsteder som tilbyr teknisk dokumentasjon eller ressurser, for eksempel Wikipedia eller Khan Academy.")
+
+# Hovedprogrammet
+def Regne_EL_formler():
+    print("Velkommen til Regne EL formler! Dette programmet lar deg beregne total motstand i en varmekabel.")
+    print("Du kan velge mellom følgende formler:")
+    print("1. Motstand (R) = (r * l) / A + 0.1")
+
+    while True:
+        formula_choice = input("Skriv inn nummeret på den formelen du vil bruke, eller skriv '?' for forslag til løsninger: ")
+
+        if formula_choice == '1':
+            print("Du har valgt formel 1: Motstand (R) = (r * l) / A + 0.1")
+
+            # Spør brukeren om valg av materiale
+            while True:
+                material_choice = input("Velg materialet (1 for kobber, 2 for aluminium): ")
+
+                if material_choice == '1':
+                    r_material = 7 / 400  # Motstand for kobber (ohm/m)
+                    material = "kobber"
+                    break
+                elif material_choice == '2':
+                    r_material = 3 / 100  # Motstand for aluminium (ohm/m)
+                    material = "aluminium"
+                    break
+                else:
+                    print("Ugyldig valg av materiale.")
+
+            # Spør brukeren om lengden på kabelen
+            l = float(input("Skriv inn lengden på kabelen (i meter): "))
+
+            # Spør brukeren om tverrsnittet på kabelen
+            A = float(input("Skriv inn tverrsnittet på kabelen (i kvadratmeter): "))
+
+            # Beregn total motstand
+            total_resistance, R_pin, R_material = calculate_resistance(r_material, l, A)
+
+            # Lagre beregningen til en tekstfil
+            save_calculation(material, l, A, total_resistance, R_pin, R_material)
+
+            break  # Avslutt løkken når beregningene er utført
+
+        elif formula_choice == '?':
+            suggest_solutions()
+
+        else:
+            print("Ugyldig valg av formel.")
+
+# Kjør hovedprogrammet
+if __name__ == "__main__":
+    Regne_EL_formler()
