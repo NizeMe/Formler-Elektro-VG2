@@ -1,1 +1,156 @@
+import math
+
+def total_faser(kurser, storre_kurser, hovedkurs, faser):
+    total_ampere_kurser = sum(kurser.values())
+    total_ampere_storre_kurser = sum(storre_kurser.values())
+    if hovedkurs in kurser:
+        total_ampere_kurser -= kurser[hovedkurs]
+    total_ampere = total_ampere_kurser + total_ampere_storre_kurser
+    if faser == 3:
+        return total_ampere / math.sqrt(3)
+    elif faser == 1:
+        return total_ampere / 3
+    else:
+        return None
+
+def hent_kurs():
+    kurs_liste = {
+        "10A": "10A (Skriv '0' for å velge neste kurs, 'S' for å hoppe til neste)",
+        "13A": "13A (Skriv '0' for å velge neste kurs, 'S' for å hoppe til neste)",
+        "15A": "15A (Skriv '0' for å velge neste kurs, 'S' for å hoppe til neste)",
+        "16A": "16A (Skriv '0' for å velge neste kurs, 'S' for å hoppe til neste)",
+        "20A": "20A (Skriv '0' for å velge neste kurs, 'S' for å hoppe til neste)",
+        "25A": "25A (Skriv '0' for å velge neste kurs, 'S' for å hoppe til neste)",
+        "32A": "32A (Skriv '0' for å velge neste kurs, 'S' for å hoppe til neste)",
+        "40A": "40A (Skriv '0' for å velge neste kurs, 'S' for å hoppe til neste)",
+        "56A": "56A (Skriv '0' for å velge neste kurs, 'S' for å hoppe til neste)",
+        "63A": "63A (Skriv '0' for å velge neste kurs, 'S' for å hoppe til neste)",
+        "80A": "80A"
+    }
+    return kurs_liste
+
+def legg_til_kurser():
+    kurs_liste = hent_kurs()
+    valgte_kurser = {}
+
+    for kurs, verdi in kurs_liste.items():
+        while True:
+            antall = input(f"Antall {verdi}: ").strip().lower()
+            if antall == 's':
+                break  # Hopp til neste kurs
+            elif antall == '0':
+                break  # Velg neste kurs
+            try:
+                antall = int(antall)
+                valgte_kurser[kurs] = valgte_kurser.get(kurs, 0) + antall
+                break  # Fortsett til neste kurs
+            except ValueError:
+                print("Ugyldig input. Vennligst skriv inn et heltall eller 'S' for å hoppe til neste kurs.")
+
+    return valgte_kurser
+
+def legg_til_storre_kurser():
+    storre_kurser = {
+        "Elbillader": "Elbilladerkurs",
+        "Ventilasjon": "Ventilasjonsanleggkurs",
+        "Varme": "Varmeelementkurs",
+        "Varmtvannstank": "Varmtvannstankkurs"
+    }
+    valgte_storre_kurser = {}
+
+    for kurs, beskrivelse in storre_kurser.items():
+        antall = input(f"Antall {beskrivelse}: ").strip().lower()
+        try:
+            antall = int(antall)
+            valgte_storre_kurser[kurs] = antall
+        except ValueError:
+            print("Ugyldig input. Vennligst skriv inn et heltall.")
+
+    return valgte_storre_kurser
+
+def beregn_totalt_antall_faser(kurser, storre_kurser, hovedkurs, faser):
+    total_faser_verdi = total_faser(kurser, storre_kurser, hovedkurs, faser)
+    if total_faser_verdi is None:
+        print("Kunne ikke beregne totalt antall faser. Vennligst sjekk input.")
+        return None
+    print("Totalt antall faser:", total_faser_verdi)
+    return total_faser_verdi
+
+def les_inn_brukerverdier(melding, min_verdi=None):
+    while True:
+        bruker_input = input(melding).strip().lower()
+        if min_verdi is not None and bruker_input.isdigit():
+            bruker_input = float(bruker_input)
+            if bruker_input < min_verdi:
+                print(f"Verdien må være større enn {min_verdi}.")
+                continue
+        if bruker_input == 'ja':
+            return True
+        elif bruker_input == 'nei':
+            return False
+        elif bruker_input.isdigit():
+            return float(bruker_input)
+        else:
+            print("Ugyldig input. Vennligst svar med 'ja' eller 'nei', eller skriv inn en numerisk verdi.")
+
+def velg_hovedkurs():
+    while True:
+        hovedkurs = input("Skriv inn hovedkursen (eks. '63A') eller 'ingen' hvis den ikke skal regnes med: ").strip().upper()
+        if hovedkurs == 'INGEN':
+            return None
+        elif hovedkurs in hent_kurs():
+            return hovedkurs
+        else:
+            print("Ugyldig kurs. Vennligst skriv inn et gyldig kurs eller 'ingen'.")
+
+def lag_tekstdokument(kurser, storre_kurser, hovedkurs, filnavn):
+    with open(filnavn, "w") as file:
+        file.write("Kursliste:\n\n")
+        for kurs, antall in kurser.items():
+            if kurs != hovedkurs:
+                file.write(f"{antall} x {kurs}\n")
+
+        if hovedkurs is not None:
+            file.write(f"\nHovedkurs (regnes bare med hvis tilgjengelig):\n")
+            file.write(f"1 x {hovedkurs}\n")
+
+        file.write("\nKurser med høyere belastning over en lengre periode:\n\n")
+        for kurs, antall in storre_kurser.items():
+            file.write(f"{antall} x {kurs}\n")
+
+def main():
+    # Spør brukeren om antall faser
+    faser = input("Velg antall faser (1-fas eller 3-fas): ").strip().lower()
+
+    # Sjekk om anlegget er 1-fas eller 3-fas
+    if faser == "1-fas":
+        faser = 1
+    elif faser == "3-fas":
+        faser = 3
+    else:
+        print("Ugyldig valg av faser. Vennligst velg enten 1-fas eller 3-fas.")
+        return
+
+    # Hent valgte kurser fra brukeren
+    valgte_kurser = legg_til_kurser()
+
+    # Hent valgte større kurs fra brukeren
+    valgte_storre_kurser = legg_til_storre_kurser()
+
+    # Velg hovedkurs
+    hovedkurs = velg_hovedkurs()
+
+    # Beregn totalt antall faser basert på valgte kurser
+    total_faser_verdi = beregn_totalt_antall_faser(valgte_kurser, valgte_storre_kurser, hovedkurs, faser)
+    if total_faser_verdi is None:
+        return
+
+    # Lag tekstfil med kursoversikt
+    filnavn = input("Skriv inn filnavn for kursoversikt: ").strip()
+    lag_tekstdokument(valgte_kurser, valgte_storre_kurser, hovedkurs, filnavn)
+
+    print("Kursoversikt er lagret i", filnavn)
+
+# Kjør main-funksjonen for å starte programmet
+main()
 
